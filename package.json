@@ -1,0 +1,23 @@
+{
+  "name": "ict3009_assignment",
+  "version": "1.0.0",
+  "description": "ict3009 assignment v1.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/malikcyrus/ict3009_blockchain.git"
+  },
+  "author": "Cyrus Malik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/malikcyrus/ict3009_blockchain/issues"
+  },
+  "homepage": "https://github.com/malikcyrus/ict3009_blockchain#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.1",
+    "ethers": "^6.0.3"
+  }
+}
