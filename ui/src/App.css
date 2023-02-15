@@ -1,0 +1,61 @@
+.grid-container {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 2fr 0.5fr 0.5fr 0.5fr;
+    gap: 0px 0px;
+    grid-template-areas: "LoanRequests-Table LoanRequests-Table LoanRequests-Table" ". . ." ". . ." ". . .";
+}
+
+.LoanRequests-Table {
+    grid-area: LoanRequests-Table;
+}
+
+.card {
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 20px;
+}
+
+#submit-loan-request {
+    margin-left: 40px;
+    grid-row-start: 2;
+    grid-column-start: 1;
+}
+
+#accept-reject-wrapper {
+    grid-row-start: 2;
+    grid-column-start: 2;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+#accept-guarantee {
+    grid-row-start: 1;
+    grid-column-start: 1;
+}
+
+#reject-guarantee {
+    grid-row-start: 2;
+    grid-column-start: 1;
+}
+
+#payback-loan {
+    grid-row-start: 2;
+    grid-column-start: 3;
+}
+
+#guarantee-loan {
+    margin-left: 40px;
+    grid-row-start: 3;
+    grid-row-end: 4;
+    grid-column-start: 1;
+}
+
+.table-responsive {
+    height: 400px !important;
+    width: 1400px !important;
+}
