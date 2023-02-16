@@ -9,15 +9,15 @@ contract LoanSystemWithTokens {
     address owner; 
 
     struct Loan { 
-    address payable borrower; 
-    address payable guarantor; 
-    address payable lender; 
-    uint256 loan; 
-    uint256 interest;
-    uint256 paybackLength; 
-    uint256 guarantorInterest; 
-    uint256 lenderInterest; 
-    uint256 stateOfLoan; // // 0 = has no accepted guarantee, 1 = has an accepted guarantee, 2 = has been provided a loan, 3 = has been paid back by borrower, 4 = borrower has missed the payback period
+        address payable borrower; 
+        address payable guarantor; 
+        address payable lender; 
+        uint256 loan; 
+        uint256 interest;
+        uint256 paybackLength; 
+        uint256 guarantorInterest; 
+        uint256 lenderInterest; 
+        uint256 stateOfLoan; // // 0 = has no accepted guarantee, 1 = has an accepted guarantee, 2 = has been provided a loan, 3 = has been paid back by borrower, 4 = borrower has missed the payback period
     }
 
     constructor() public { 
@@ -77,7 +77,8 @@ contract LoanSystemWithTokens {
 
     function grantLoan(uint256 idx) public payable{ 
         require(msg.value == loanRequests[idx].loan, "Invalid Funds Transferred! Funds transffered is not equal to loan request");
-        require(msg.sender == loanRequests[idx].lender, "You are not the lender!");
+        require(msg.sender != loanRequests[idx].borrower, "You are not the lender!");
+        require(msg.sender == loanRequests[idx].guarantor, "You are not the lender!");
         require(loanRequests[idx].stateOfLoan == 1, "The guarantee has either not yet been accepted, or a loan has already been provided!");
         require(now < loanRequests[idx].paybackLength, "Loan Expired!");
         loanRequests[idx].stateOfLoan = 2; 

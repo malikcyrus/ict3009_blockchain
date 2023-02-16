@@ -31,15 +31,20 @@ contract LoanSystem {
         return false; 
     }
 
+    function getNumberOfLoanRequests() public view returns(uint256 requests) {
+        return loanRequests.length;
+    }
+
 
     function requestLoan(uint256 loan, uint256 interest, uint256 paybackLength) public { 
         require(loan > 0, "Invalid Loan Amount");
         loanRequests.push(Loan(msg.sender, address(0), address(0), loan, interest, (now + paybackLength), 0, 0, 0));
     }
 
-    function viewLoanRequests(uint256 idx) public view returns(address borrower, address guarantor, address lender, uint256 sum , uint256 interest, uint256 paybackPeriod, uint256 guarantorInterest, uint256 lenderInterest, uint256 status) { 
+    function viewLoanRequests(uint256 idx) public view returns(address borrower, address guarantor, address lender, uint256 loan , uint256 interest, uint256 paybackLength, uint256 guarantorInterest, uint256 lenderInterest, uint256 stateOfLoan) { 
         Loan memory lr = loanRequests[idx];    // this prevents stack from getting too deep
-        return(lr.borrower,
+        return(
+            lr.borrower,
             lr.guarantor,
             lr.lender,
             lr.loan,
@@ -50,7 +55,7 @@ contract LoanSystem {
             lr.stateOfLoan);
     }
 
-    function guaranteeLoan(uint256 idx, uint256 guaranteeInterest) public payable {
+    function guaranteeLoan(uint256 idx, uint256 guaranteeInterest) validIdx(idx) public payable {
         require(msg.value == loanRequests[idx].loan, "Invalid Funds Transferred! Funds transffered is not equal to loan request");
         require(msg.sender != loanRequests[idx].borrower, "Invalid Guarantee! Borrower cannot guarantee");
         require(loanRequests[idx].guarantor == address(0), "Loan already being guaranteed!");
@@ -62,17 +67,18 @@ contract LoanSystem {
 
     function grantLoan(uint256 idx) public payable{ 
         require(msg.value == loanRequests[idx].loan, "Invalid Funds Transferred! Funds transffered is not equal to loan request");
-        require(msg.sender == loanRequests[idx].lender, "You are not the lender!");
+        require(msg.sender != loanRequests[idx].borrower, "You are not the lender!");
+        require(msg.sender != loanRequests[idx].guarantor, "You are not the lender!");
         require(loanRequests[idx].stateOfLoan == 1, "The guarantee has either not yet been accepted, or a loan has already been provided!");
         require(now < loanRequests[idx].paybackLength, "Loan Expired!");
         loanRequests[idx].stateOfLoan = 2; 
         loanRequests[idx].lender = msg.sender; 
-        loanRequests[idx].lenderInterest = loanRequests[idx].interest - loanRequests[idx].guarantorInterest;
+        loanRequests[idx].lenderInterest = (loanRequests[idx].interest - loanRequests[idx].guarantorInterest);
         loanRequests[idx].borrower.transfer(msg.value);
     }
 
     function acceptGuarantee(uint256 idx) public {
-        require(loanRequests[idx].stateOfLoan == 0, "Loan has an already acceted guarantee");
+        require(loanRequests[idx].stateOfLoan == 0, "Loan has an already accepted guarantee");
         loanRequests[idx].stateOfLoan = 1;
     }
 
@@ -94,10 +100,10 @@ contract LoanSystem {
     }
 
     function missedPaybackDate(uint256 idx) public validIdx(idx) { 
+        require(msg.sender == loanRequests[idx].lender, "You are not the lender!");
         require(loanRequests[idx].stateOfLoan == 2, "Loan already paid!");
         require(now > loanRequests[idx].paybackLength, "Payback period not over yet!");
-        require(msg.sender == loanRequests[idx].lender, "You are not the lender");
         loanRequests[idx].stateOfLoan = 4; 
-        loanRequests[idx].lender.transfer(loanRequests[idx].loan);
+        msg.sender.transfer(loanRequests[idx].loan);
     } 
 }
